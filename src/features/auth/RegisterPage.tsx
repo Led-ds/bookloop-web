@@ -44,7 +44,7 @@ export function RegisterPage() {
     register.mutate(form, {
       onSuccess: () => {
         success("Conta criada com sucesso. Bem-vindo ao BookLoop!");
-        navigate("/");
+        navigate("/app");
       },
       onError: (err) => setServerErrors(apiFieldErrors(err)),
     });
