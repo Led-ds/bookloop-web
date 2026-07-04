@@ -50,7 +50,7 @@ export function MyRentalsPage() {
           title="Você ainda não solicitou nenhum livro"
           hint="Encontre um título no acervo e faça sua primeira solicitação."
           action={
-            <Link to="/">
+            <Link to="/app">
               <Button variant="outline"><Library className="h-4 w-4" /> Explorar acervo</Button>
             </Link>
           }

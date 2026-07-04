@@ -6,7 +6,7 @@ import type { BookSummary } from "@/types";
 export function BookCard({ book }: { book: BookSummary }) {
   return (
     <Link
-      to={`/books/${book.id}`}
+      to={`/app/books/${book.id}`}
       className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
     >
       <div className="relative flex aspect-[3/4] items-center justify-center bg-brand-50">

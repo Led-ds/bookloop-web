@@ -16,7 +16,7 @@ export function Layout() {
   const navItem = (to: string, label: string, Icon: typeof Library) => (
     <NavLink
       to={to}
-      end={to === "/"}
+      end={to === "/app"}
       className={({ isActive }) =>
         cn(
           "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition",
@@ -32,28 +32,28 @@ export function Layout() {
     <div className="min-h-screen bg-gray-50">
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link to="/" className="flex items-center gap-2 text-brand-700">
+          <Link to="/app" className="flex items-center gap-2 text-brand-700">
             <BookOpen className="h-6 w-6" />
             <span className="text-lg font-bold">BookLoop</span>
           </Link>
 
           <nav className="flex items-center gap-1">
-            {navItem("/", "Acervo", Library)}
-            {navItem("/rentals", "Meus aluguéis", BookOpen)}
-            {navItem("/lendings", "Empréstimos", Inbox)}
-            {navItem("/books/new", "Cadastrar", Plus)}
+            {navItem("/app", "Acervo", Library)}
+            {navItem("/app/rentals", "Meus aluguéis", BookOpen)}
+            {navItem("/app/lendings", "Empréstimos", Inbox)}
+            {navItem("/app/books/new", "Cadastrar", Plus)}
           </nav>
 
           <div className="flex items-center gap-3">
             {user && (
-              <div className="hidden text-right sm:block">
+              <Link to="/app/profile" className="hidden text-right sm:block hover:opacity-80">
                 <p className="text-sm font-medium text-gray-900">{user.name}</p>
                 {user.penaltiesCount > 0 && (
                   <p className="flex items-center justify-end gap-1 text-xs text-amber-600">
                     <ShieldAlert className="h-3 w-3" /> {user.penaltiesCount} penalidade(s)
                   </p>
                 )}
-              </div>
+              </Link>
             )}
             <button
               onClick={handleLogout}

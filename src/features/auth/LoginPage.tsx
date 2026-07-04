@@ -24,7 +24,7 @@ export function LoginPage() {
     setSubmitted(true);
     if (Object.keys(errors).length > 0) return;
     if (login.isPending) return; // impede duplo envio
-    login.mutate({ email, password }, { onSuccess: () => navigate("/") });
+    login.mutate({ email, password }, { onSuccess: () => navigate("/app") });
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {

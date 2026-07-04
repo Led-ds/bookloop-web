@@ -41,7 +41,7 @@ export function BookDetailPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6">
-      <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-brand-700">
+      <Link to="/app" className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-brand-700">
         <ArrowLeft className="h-4 w-4" /> Voltar ao acervo
       </Link>
 
@@ -109,7 +109,7 @@ export function BookDetailPage() {
           ownerName={book.owner.name}
           defaultName={me?.name ?? ""}
           onClose={() => setOpen(false)}
-          onDone={() => navigate("/rentals")}
+          onDone={() => navigate("/app/rentals")}
         />
       )}
     </div>
