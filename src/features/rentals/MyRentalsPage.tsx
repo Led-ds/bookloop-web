@@ -1,25 +1,40 @@
-import { Loader2, BookX, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
+import { BookX, Calendar, Library } from "lucide-react";
 import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useMyRentals, useRentalAction } from "./useRentals";
+import { RowListSkeleton, EmptyState } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/toast";
+import { apiError } from "@/lib/apiError";
+import { useMyRentals, useRentalAction, type RentalActionType } from "./useRentals";
 import type { Rental } from "@/types";
 
 function fmt(d?: string) {
   return d ? new Date(d).toLocaleDateString("pt-BR") : "—";
 }
 
+const ACTION_DONE: Record<RentalActionType, string> = {
+  approve: "Solicitação aprovada.",
+  reject: "Solicitação rejeitada.",
+  activate: "Empréstimo marcado como entregue.",
+  cancel: "Solicitação cancelada.",
+  return: "Devolução registrada.",
+};
+
+/** Hook local que aplica uma ação e dá feedback via toast. Reusado por MyRentals e Lendings. */
+export function useRentalActionWithToast() {
+  const action = useRentalAction();
+  const { success, error } = useToast();
+  const run = (id: string, a: RentalActionType) =>
+    action.mutate(
+      { id, action: a },
+      { onSuccess: () => success(ACTION_DONE[a]), onError: (err) => error(apiError(err)) },
+    );
+  return { run, busy: action.isPending };
+}
+
 export function MyRentalsPage() {
   const { data, isLoading } = useMyRentals();
-  const action = useRentalAction();
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-20 text-brand-600">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
+  const { run, busy } = useRentalActionWithToast();
   const rentals = data?.content ?? [];
 
   return (
@@ -27,15 +42,23 @@ export function MyRentalsPage() {
       <h1 className="mb-1 text-2xl font-bold text-gray-900">Meus aluguéis</h1>
       <p className="mb-6 text-sm text-gray-500">Livros que você solicitou.</p>
 
-      {rentals.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 py-20 text-gray-400">
-          <BookX className="h-10 w-10" />
-          <p className="text-sm">Você ainda não solicitou nenhum livro.</p>
-        </div>
+      {isLoading ? (
+        <RowListSkeleton />
+      ) : rentals.length === 0 ? (
+        <EmptyState
+          icon={<BookX className="h-10 w-10" />}
+          title="Você ainda não solicitou nenhum livro"
+          hint="Encontre um título no acervo e faça sua primeira solicitação."
+          action={
+            <Link to="/">
+              <Button variant="outline"><Library className="h-4 w-4" /> Explorar acervo</Button>
+            </Link>
+          }
+        />
       ) : (
         <div className="space-y-3">
           {rentals.map((r) => (
-            <RentalRow key={r.id} rental={r} role="renter" onAction={(a) => action.mutate({ id: r.id, action: a })} busy={action.isPending} />
+            <RentalRow key={r.id} rental={r} role="renter" onAction={(a) => run(r.id, a)} busy={busy} />
           ))}
         </div>
       )}
@@ -48,7 +71,7 @@ export function RentalRow({
 }: {
   rental: Rental;
   role: "renter" | "owner";
-  onAction: (a: "approve" | "reject" | "activate" | "cancel" | "return") => void;
+  onAction: (a: RentalActionType) => void;
   busy: boolean;
 }) {
   return (

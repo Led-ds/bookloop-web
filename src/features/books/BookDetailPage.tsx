@@ -10,6 +10,7 @@ import { useBook } from "./useBooks";
 import { useRequestRental } from "@/features/rentals/useRentals";
 import { useAuthStore } from "@/store/authStore";
 import { apiError } from "@/lib/apiError";
+import { useToast } from "@/components/ui/toast";
 
 function todayPlus(days: number) {
   const d = new Date();
@@ -126,6 +127,7 @@ function RentalModal({
   onDone: () => void;
 }) {
   const request = useRequestRental();
+  const { success } = useToast();
   const [message, setMessage] = useState("");
   const [startDate, setStartDate] = useState(todayPlus(1));
   const [endDate, setEndDate] = useState(todayPlus(15));
@@ -135,7 +137,12 @@ function RentalModal({
   const submit = () => {
     request.mutate(
       { bookId, message: message || undefined, startDate, endDate, termAccepted, signerName },
-      { onSuccess: onDone }
+      {
+        onSuccess: () => {
+          success("Solicitação enviada. O dono do livro vai avaliar.");
+          onDone();
+        },
+      }
     );
   };
 
