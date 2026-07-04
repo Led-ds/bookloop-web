@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { BookOpen, Library, Inbox, Plus, LogOut, ShieldAlert } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/cn";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 
 export function Layout() {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ export function Layout() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <NotificationBell />
             {user && (
               <Link to="/app/profile" className="hidden text-right sm:block hover:opacity-80">
                 <p className="text-sm font-medium text-gray-900">{user.name}</p>
