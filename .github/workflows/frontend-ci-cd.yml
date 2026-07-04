@@ -40,7 +40,11 @@ jobs:
       - name: Build Docker image
         if: github.event_name == 'push'
         run: |
-          docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.sha }} .
+          docker build \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            -t $IMAGE_NAME:latest \
+            -t $IMAGE_NAME:${{ github.sha }} \
+            .
 
       - name: Push Docker image
         if: github.event_name == 'push'
