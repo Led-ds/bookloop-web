@@ -1,26 +1,21 @@
 import { useState } from "react";
-import { Search, Loader2, BookX } from "lucide-react";
+import { Search, BookX } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { CatalogSkeleton, EmptyState } from "@/components/ui/skeleton";
 import { useBooksSearch } from "./useBooks";
 import { BookCard } from "./BookCard";
-
-const GENRES = [
-  "", "FICCAO", "NAO_FICCAO", "FANTASIA", "ROMANCE", "SUSPENSE", "TERROR",
-  "BIOGRAFIA", "TECNICO", "INFANTOJUVENIL", "HISTORIA", "AUTOAJUDA", "OUTRO",
-];
-
-const GENRE_LABEL: Record<string, string> = {
-  "": "Todos os gêneros",
-  FICCAO: "Ficção", NAO_FICCAO: "Não-ficção", FANTASIA: "Fantasia",
-  ROMANCE: "Romance", SUSPENSE: "Suspense", TERROR: "Terror",
-  BIOGRAFIA: "Biografia", TECNICO: "Técnico", INFANTOJUVENIL: "Infantojuvenil",
-  HISTORIA: "História", AUTOAJUDA: "Autoajuda", OUTRO: "Outro",
-};
+import { GENRES, genreLabel } from "@/lib/constants";
+import { useDebounce } from "@/lib/useDebounce";
 
 export function CatalogPage() {
   const [q, setQ] = useState("");
   const [genre, setGenre] = useState("");
-  const { data, isLoading, isError } = useBooksSearch({ q: q || undefined, genre: genre || undefined });
+  const debouncedQ = useDebounce(q);
+
+  const { data, isLoading, isError } = useBooksSearch({
+    q: debouncedQ || undefined,
+    genre: genre || undefined,
+  });
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
@@ -37,36 +32,40 @@ export function CatalogPage() {
             placeholder="Buscar por título ou autor..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
+            aria-label="Buscar no acervo"
           />
         </div>
         <select
           value={genre}
           onChange={(e) => setGenre(e.target.value)}
+          aria-label="Filtrar por gênero"
           className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
         >
+          <option value="">Todos os gêneros</option>
           {GENRES.map((g) => (
-            <option key={g} value={g}>{GENRE_LABEL[g]}</option>
+            <option key={g} value={g}>{genreLabel(g)}</option>
           ))}
         </select>
       </div>
 
-      {isLoading && (
-        <div className="flex justify-center py-20 text-brand-600">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      )}
+      {isLoading && <CatalogSkeleton />}
 
       {isError && (
-        <p className="py-20 text-center text-sm text-red-600">
-          Não foi possível carregar o acervo.
+        <p role="alert" className="py-20 text-center text-sm text-red-600">
+          Não foi possível carregar o acervo. Tente novamente em instantes.
         </p>
       )}
 
       {data && data.content.length === 0 && (
-        <div className="flex flex-col items-center gap-2 py-20 text-gray-400">
-          <BookX className="h-10 w-10" />
-          <p className="text-sm">Nenhum livro encontrado.</p>
-        </div>
+        <EmptyState
+          icon={<BookX className="h-10 w-10" />}
+          title={q || genre ? "Nenhum livro encontrado" : "O acervo ainda está vazio"}
+          hint={
+            q || genre
+              ? "Tente outros termos de busca ou remova o filtro de gênero."
+              : "Assim que livros forem cadastrados, eles aparecem aqui."
+          }
+        />
       )}
 
       {data && data.content.length > 0 && (

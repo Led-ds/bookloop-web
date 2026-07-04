@@ -4,6 +4,8 @@ import {
   type CreateRentalInput,
 } from "@/api/rentals";
 
+export type RentalActionType = "approve" | "reject" | "activate" | "cancel" | "return";
+
 export function useMyRentals() {
   return useQuery({ queryKey: ["rentals", "mine"], queryFn: () => myRentals() });
 }
@@ -26,7 +28,7 @@ export function useRequestRental() {
 export function useRentalAction() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (v: { id: string; action: "approve" | "reject" | "activate" | "cancel" | "return" }) =>
+    mutationFn: (v: { id: string; action: RentalActionType }) =>
       rentalAction(v.id, v.action),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["rentals"] });
