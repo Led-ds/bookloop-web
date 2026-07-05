@@ -14,6 +14,13 @@ export async function searchBooks(filters: BookFilters) {
   return res.data.data;
 }
 
+export async function myBooks(page = 0, size = 24) {
+  const res = await api.get<ApiResponse<PageResponse<BookSummary>>>("/books/mine", {
+    params: { page, size },
+  });
+  return res.data.data;
+}
+
 export async function getBook(id: string) {
   const res = await api.get<ApiResponse<Book>>(`/books/${id}`);
   return res.data.data;
@@ -32,5 +39,10 @@ export interface BookInput {
 
 export async function createBook(input: BookInput) {
   const res = await api.post<ApiResponse<Book>>("/books", input);
+  return res.data.data;
+}
+
+export async function updateBook(id: string, input: BookInput) {
+  const res = await api.put<ApiResponse<Book>>(`/books/${id}`, input);
   return res.data.data;
 }

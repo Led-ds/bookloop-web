@@ -21,8 +21,15 @@ export interface User {
   avatarUrl?: string;
   bio?: string;
   location?: string;
+  city?: string;
+  state?: string;
+  addressLine?: string;
+  neighborhood?: string;
+  postalCode?: string;
+  profileCompleted?: boolean;
   penaltiesCount: number;
   role: "USER" | "ADMIN";
+  createdAt?: string;
 }
 
 export interface AuthResponse {
@@ -33,9 +40,9 @@ export interface AuthResponse {
   user: User;
 }
 
-export type BookStatus = "AVAILABLE" | "RENTED" | "UNAVAILABLE";
+export type BookStatus = "AVAILABLE" | "RESERVED" | "RENTED";
 export type RentalStatus =
-  | "PENDING" | "APPROVED" | "ACTIVE" | "RETURNED" | "LATE" | "REJECTED" | "CANCELLED";
+  | "PENDING" | "APPROVED" | "ACTIVE" | "RETURNED" | "OVERDUE" | "REJECTED" | "CANCELLED";
 
 export interface BookSummary {
   id: string;
