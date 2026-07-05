@@ -56,9 +56,13 @@ api.interceptors.response.use(
       | (InternalAxiosRequestConfig & { _retried?: boolean })
       | undefined;
     const isAuthCall = original?.url?.includes("/auth/");
+    const isPublicCall = original?.url?.includes("/public/");
+    // Só tentamos refresh/redirect quando há uma sessão de fato. Um 401 numa chamada
+    // pública (ex.: landing chamando /public/home sem login) NÃO deve derrubar para o login.
+    const hasSession = !!useAuthStore.getState().refreshToken;
     const status = error.response?.status;
 
-    if (status === 401 && original && !original._retried && !isAuthCall) {
+    if (status === 401 && original && !original._retried && !isAuthCall && !isPublicCall && hasSession) {
       original._retried = true;
       const token = await refreshAccessToken();
       if (token) {
