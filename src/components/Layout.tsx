@@ -11,7 +11,7 @@ export function Layout() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/"); // logout do usuário volta para a Home pública
   };
 
   const navItem = (to: string, label: string, Icon: typeof Library) => (
