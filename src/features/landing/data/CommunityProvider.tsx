@@ -2,15 +2,16 @@ import { createContext, useContext, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { CommunityRepository } from "./CommunityRepository";
 import { mockCommunityRepository } from "./mockCommunityRepository";
+import { apiCommunityRepository } from "./apiCommunityRepository";
 
-const CommunityRepoContext = createContext<CommunityRepository>(mockCommunityRepository);
+const CommunityRepoContext = createContext<CommunityRepository>(apiCommunityRepository);
 
 /**
  * Injeta a implementação do repositório. Hoje `mock`; amanhã, basta passar uma
  * implementação REST — a interface da landing não muda.
  */
 export function CommunityProvider({
-  repository = mockCommunityRepository,
+  repository = apiCommunityRepository,
   children,
 }: {
   repository?: CommunityRepository;

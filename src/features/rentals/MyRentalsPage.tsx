@@ -103,7 +103,7 @@ export function RentalRow({
         {role === "owner" && r.status === "APPROVED" && (
           <Button onClick={() => onAction("activate")} disabled={busy}>Marcar como entregue</Button>
         )}
-        {role === "owner" && (r.status === "ACTIVE" || r.status === "LATE") && (
+        {role === "owner" && (r.status === "ACTIVE" || r.status === "OVERDUE") && (
           <Button onClick={() => onAction("return")} disabled={busy}>Registrar devolução</Button>
         )}
         {role === "renter" && (r.status === "PENDING" || r.status === "APPROVED") && (

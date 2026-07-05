@@ -92,7 +92,10 @@ export function BookDetailPage() {
 
           <div className="mt-6">
             {isOwner ? (
-              <p className="text-sm text-gray-500">Este livro é seu.</p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button onClick={() => navigate(`/app/books/${book.id}/edit`)}>Editar livro</Button>
+                <span className="text-sm text-gray-500">Este livro é seu.</span>
+              </div>
             ) : canRequest ? (
               <Button onClick={() => setOpen(true)}>Solicitar aluguel</Button>
             ) : (
