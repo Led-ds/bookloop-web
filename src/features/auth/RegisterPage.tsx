@@ -55,13 +55,15 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
-      <div className="mb-8 flex items-center gap-2 text-brand-700">
-        <BookOpen /> <span className="text-2xl font-bold">BookLoop</span>
-      </div>
-      <h1 className="mb-6 text-xl font-semibold">Criar conta</h1>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+        <div className="mb-8 flex items-center gap-2 text-primary">
+          <BookOpen /> <span className="text-2xl font-bold">BookLoop</span>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h1 className="mb-6 text-xl font-semibold text-foreground">Criar conta</h1>
 
-      <div className="space-y-3" onKeyDown={onKeyDown}>
+          <div className="space-y-3" onKeyDown={onKeyDown}>
         <Field id="name" label="Nome" required error={errorFor("name")}>
           <Input id="name" autoComplete="name" value={form.name}
                  invalid={!!errorFor("name")} onChange={(e) => set("name", e.target.value)} />
@@ -78,15 +80,17 @@ export function RegisterPage() {
 
         {topError && <p role="alert" className="text-sm text-red-600">{topError}</p>}
 
-        <Button className="w-full" onClick={submit} disabled={register.isPending}>
-          {register.isPending ? "Criando..." : "Criar conta"}
-        </Button>
-      </div>
+          <Button className="w-full" onClick={submit} disabled={register.isPending}>
+            {register.isPending ? "Criando..." : "Criar conta"}
+          </Button>
+          </div>
+        </div>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
-        Já tem conta?{" "}
-        <Link to="/login" className="font-medium text-brand-700">Entrar</Link>
-      </p>
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Já tem conta?{" "}
+          <Link to="/login" className="font-medium text-primary">Entrar</Link>
+        </p>
+      </div>
     </div>
   );
 }
