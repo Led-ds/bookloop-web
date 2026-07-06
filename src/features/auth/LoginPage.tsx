@@ -32,14 +32,16 @@ export function LoginPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
-      <div className="mb-8 flex items-center gap-2 text-brand-700">
-        <BookOpen /> <span className="text-2xl font-bold">BookLoop</span>
-      </div>
-      <h1 className="mb-1 text-xl font-semibold">Entrar</h1>
-      <p className="mb-6 text-sm text-gray-500">Compartilhar é gerar conexões.</p>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+        <div className="mb-8 flex items-center gap-2 text-primary">
+          <BookOpen /> <span className="text-2xl font-bold">BookLoop</span>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h1 className="mb-1 text-xl font-semibold text-foreground">Entrar</h1>
+          <p className="mb-6 text-sm text-muted-foreground">Compartilhar é gerar conexões.</p>
 
-      <div className="space-y-3" onKeyDown={onKeyDown}>
+          <div className="space-y-3" onKeyDown={onKeyDown}>
         <Field id="email" label="E-mail" required error={errorFor("email")}>
           <Input
             id="email"
@@ -65,15 +67,17 @@ export function LoginPage() {
           <p role="alert" className="text-sm text-red-600">{apiError(login.error)}</p>
         )}
 
-        <Button className="w-full" onClick={submit} disabled={login.isPending}>
-          {login.isPending ? "Entrando..." : "Entrar"}
-        </Button>
-      </div>
+          <Button className="w-full" onClick={submit} disabled={login.isPending}>
+            {login.isPending ? "Entrando..." : "Entrar"}
+          </Button>
+          </div>
+        </div>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
-        Não tem conta?{" "}
-        <Link to="/register" className="font-medium text-brand-700">Cadastre-se</Link>
-      </p>
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Não tem conta?{" "}
+          <Link to="/register" className="font-medium text-primary">Cadastre-se</Link>
+        </p>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { BookOpen, Library, Inbox, Plus, LogOut, ShieldAlert } from "lucide-reac
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/cn";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export function Layout() {
   const navigate = useNavigate();
@@ -10,8 +11,10 @@ export function Layout() {
   const logout = useAuthStore((s) => s.logout);
 
   const handleLogout = () => {
-    logout();
-    navigate("/"); // logout do usuário volta para a Home pública
+    // Navega para a Home pública ANTES de limpar a sessão: com a ordem inversa,
+    // o ProtectedRoute reavalia isAuthenticated=false e redireciona para /login.
+    navigate("/", { replace: true });
+    setTimeout(() => logout(), 0);
   };
 
   const navItem = (to: string, label: string, Icon: typeof Library) => (
@@ -30,10 +33,10 @@ export function Layout() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-40 border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link to="/app" className="flex items-center gap-2 text-brand-700">
+          <Link to="/app" className="flex items-center gap-2 text-primary">
             <BookOpen className="h-6 w-6" />
             <span className="text-lg font-bold">BookLoop</span>
           </Link>
@@ -48,18 +51,28 @@ export function Layout() {
           <div className="flex items-center gap-3">
             <NotificationBell />
             {user && (
-              <Link to="/app/profile" className="hidden text-right sm:block hover:opacity-80">
-                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                {user.penaltiesCount > 0 && (
-                  <p className="flex items-center justify-end gap-1 text-xs text-amber-600">
-                    <ShieldAlert className="h-3 w-3" /> {user.penaltiesCount} penalidade(s)
-                  </p>
-                )}
+              <Link
+                to="/app/profile"
+                className="flex items-center gap-2 hover:opacity-80"
+                title="Meu perfil"
+              >
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={user.avatarUrl} alt={user.name} />
+                  <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="hidden text-right sm:block">
+                  <p className="text-sm font-medium text-foreground">{user.name}</p>
+                  {user.penaltiesCount > 0 && (
+                    <p className="flex items-center justify-end gap-1 text-xs text-warning">
+                      <ShieldAlert className="h-3 w-3" /> {user.penaltiesCount} penalidade(s)
+                    </p>
+                  )}
+                </div>
               </Link>
             )}
             <button
               onClick={handleLogout}
-              className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-red-600"
+              className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-destructive"
               title="Sair"
             >
               <LogOut className="h-4 w-4" />
