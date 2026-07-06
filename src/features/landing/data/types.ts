@@ -7,6 +7,7 @@ export interface CommunityStats {
   rentalsCompleted: number;// empréstimos realizados
   ratings: number;         // avaliações registradas
   returnRate: number;      // taxa de devolução (0..1)
+  averageRating: number | null; // média geral das avaliações (null se não há)
 }
 
 export type ActivityKind = "lent" | "returned" | "rated" | "joined";
@@ -30,4 +31,22 @@ export interface LivingBook {
   readers: number;         // leitores alcançados
   rating: number;          // média 0..5
   lastLentAt?: string;     // ISO timestamp do último empréstimo
+}
+
+export interface CommunityReview {
+  id: string;
+  rating: number;          // 1..5
+  comment: string;
+  authorName: string;      // quem avaliou
+  authorAvatarUrl?: string;
+  targetName: string;      // livro ou pessoa avaliada
+  targetType: "BOOK" | "USER";
+}
+
+export interface TopReader {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+  ratingAvg: number;
+  ratingCount: number;
 }

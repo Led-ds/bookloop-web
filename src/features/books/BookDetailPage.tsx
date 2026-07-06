@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/badge";
 import { useBook } from "./useBooks";
+import { useBookReviews } from "@/features/reviews/useReviews";
+import { ReviewList, RatingSummary } from "@/features/reviews/ReviewList";
 import { useRequestRental } from "@/features/rentals/useRentals";
 import { useAuthStore } from "@/store/authStore";
 import { apiError } from "@/lib/apiError";
@@ -22,6 +24,8 @@ export function BookDetailPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const { data: book, isLoading } = useBook(id);
+  const { data: reviewsPage, isLoading: reviewsLoading } = useBookReviews(id);
+  const reviews = reviewsPage?.content ?? [];
   const me = useAuthStore((s) => s.user);
   const [open, setOpen] = useState(false);
 
@@ -104,6 +108,18 @@ export function BookDetailPage() {
           </div>
         </div>
       </div>
+
+      <section className="mt-10">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-gray-900">Avaliações</h2>
+          <RatingSummary reviews={reviews} totalCount={reviewsPage?.totalElements} />
+        </div>
+        <ReviewList
+          reviews={reviews}
+          isLoading={reviewsLoading}
+          emptyLabel="Este livro ainda não recebeu avaliações."
+        />
+      </section>
 
       {open && (
         <RentalModal

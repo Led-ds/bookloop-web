@@ -18,13 +18,16 @@ import { apiError } from "@/lib/apiError";
 import { useUpdateProfile } from "./useProfile";
 import type { ProfileInput } from "@/api/users";
 import type { Rental, User } from "@/types";
+import { useUserReviews } from "@/features/reviews/useReviews";
+import { ReviewList, RatingSummary } from "@/features/reviews/ReviewList";
 
-type Tab = "books" | "renting" | "history" | "penalties";
+type Tab = "books" | "renting" | "history" | "reviews" | "penalties";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "books", label: "Meus livros" },
   { key: "renting", label: "Alugados" },
   { key: "history", label: "Histórico" },
+  { key: "reviews", label: "Avaliações" },
   { key: "penalties", label: "Penalidades" },
 ];
 
@@ -127,6 +130,7 @@ export function ProfilePage() {
           {tab === "books" && <MyBooksTab />}
           {tab === "renting" && <RentalsTab mode="active" />}
           {tab === "history" && <RentalsTab mode="history" />}
+          {tab === "reviews" && <ReviewsTab userId={user.id} />}
           {tab === "penalties" && <PenaltiesTab count={user.penaltiesCount} />}
         </div>
       </div>
@@ -256,6 +260,21 @@ function RentalsTab({ mode }: { mode: "active" | "history" }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function ReviewsTab({ userId }: { userId: string }) {
+  const { data, isLoading } = useUserReviews(userId);
+  const reviews = data?.content ?? [];
+  return (
+    <div className="space-y-4">
+      <RatingSummary reviews={reviews} totalCount={data?.totalElements} />
+      <ReviewList
+        reviews={reviews}
+        isLoading={isLoading}
+        emptyLabel="Você ainda não recebeu avaliações. Elas aparecem após empréstimos devolvidos."
+      />
+    </div>
   );
 }
 
