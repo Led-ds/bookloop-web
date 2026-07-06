@@ -5,7 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StarRating } from "@/components/ui/star-rating";
 import { genreLabel } from "@/lib/constants";
-import { CommunityProvider, useLivingBooks } from "./data/CommunityProvider";
+import { CommunityProvider, useLivingBooks, useCommunityReviews, useCommunityStats } from "./data/CommunityProvider";
 import type { LivingBook } from "./data/types";
 
 const btn = {
@@ -20,13 +20,6 @@ const btn = {
   ghost:
     "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary/60",
 };
-
-// Avaliações de comunidade (mock — o backend ainda não tem domínio de reviews).
-const MOCK_REVIEWS = [
-  { id: "r1", rating: 5, comment: "Ana é super atenciosa, combinou tudo pelo chat e entregou pontualmente.", name: "Ana Souza", ratingsCount: 24, avatar: "https://i.pravatar.cc/80?img=47", by: "Carla" },
-  { id: "r2", rating: 5, comment: "Carla é a alma da comunidade! Sempre com dicas de leitura incríveis.", name: "Carla Mendes", ratingsCount: 31, avatar: "https://i.pravatar.cc/80?img=32", by: "Ana" },
-  { id: "r3", rating: 5, comment: "Bruno cuidou super bem do livro e devolveu antes do prazo.", name: "Bruno Lima", ratingsCount: 18, avatar: "https://i.pravatar.cc/80?img=12", by: "João" },
-];
 
 const HERO_AVATARS = [
   "https://i.pravatar.cc/64?img=47", "https://i.pravatar.cc/64?img=32",
@@ -45,6 +38,9 @@ export function LandingPage() {
 
 function LandingContent() {
   const { data: books = [], isLoading } = useLivingBooks();
+  const { data: reviews = [] } = useCommunityReviews();
+  const { data: stats } = useCommunityStats();
+  const avgRating = stats?.averageRating ?? null;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -86,10 +82,12 @@ function LandingContent() {
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <StarRating value={4.8} size={14} showValue />
-                <span>de avaliação média</span>
-              </div>
+              {avgRating != null && (
+                <div className="flex items-center gap-2">
+                  <StarRating value={avgRating} size={14} showValue />
+                  <span>de avaliação média</span>
+                </div>
+              )}
               <div className="flex -space-x-2">
                 {HERO_AVATARS.map((src, i) => (
                   <Avatar key={i} className="h-8 w-8 border-2 border-background">
@@ -174,32 +172,35 @@ function LandingContent() {
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-3">
-          {MOCK_REVIEWS.map((r) => (
-            <article key={r.id}
-              className="relative flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-              <Quote className="absolute right-4 top-4 h-8 w-8 text-primary/10" />
-              <StarRating value={r.rating} size={16} />
-              <p className="text-sm leading-relaxed text-foreground/90">"{r.comment}"</p>
-              <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
-                <Avatar>
-                  <AvatarImage src={r.avatar} />
-                  <AvatarFallback>{r.name[0]}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{r.name}</p>
-                  <div className="flex items-center gap-2">
-                    <StarRating value={5} size={12} />
-                    <span className="text-xs text-muted-foreground">{r.ratingsCount} avaliações</span>
+        {reviews.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border bg-card/40 px-6 py-14 text-center text-muted-foreground">
+            Ainda não há avaliações por aqui. Assim que os primeiros empréstimos forem
+            devolvidos e avaliados, as vozes da comunidade aparecem neste mural.
+          </div>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-3">
+            {reviews.slice(0, 6).map((r) => (
+              <article key={r.id}
+                className="relative flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                <Quote className="absolute right-4 top-4 h-8 w-8 text-primary/10" />
+                <StarRating value={r.rating} size={16} />
+                {r.comment && <p className="text-sm leading-relaxed text-foreground/90">"{r.comment}"</p>}
+                <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
+                  <Avatar>
+                    <AvatarImage src={r.authorAvatarUrl} />
+                    <AvatarFallback>{r.authorName[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{r.authorName}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      avaliou {r.targetType === "BOOK" ? "o livro " : ""}{r.targetName}
+                    </p>
                   </div>
                 </div>
-                <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
-                  por {r.by}
-                </span>
-              </div>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* BENEFÍCIOS */}

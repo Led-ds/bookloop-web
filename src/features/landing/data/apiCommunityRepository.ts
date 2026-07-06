@@ -1,10 +1,11 @@
 import { api } from "@/lib/api";
 import type { ApiResponse } from "@/types";
 import type { CommunityRepository } from "./CommunityRepository";
-import type { ActivityItem, ActivityKind, CommunityStats, LivingBook } from "./types";
-import { mockCommunityRepository } from "./mockCommunityRepository";
+import type {
+  ActivityItem, ActivityKind, CommunityReview, CommunityStats, LivingBook, TopReader,
+} from "./types";
 
-/** Forma do GET /api/v1/public/home (backend v1.2). */
+/** Forma do GET /api/v1/public/home. */
 interface PublicHome {
   stats: {
     totalBooks: number;
@@ -16,6 +17,8 @@ interface PublicHome {
   featuredBooks: PublicBook[];
   communityBooks: PublicBook[];
   recentActivities: { type: string; message: string; at: string | null }[];
+  reviews: PublicReview[];
+  topReaders: PublicTopReader[];
   bookOfTheWeek: PublicBook | null;
 }
 interface PublicBook {
@@ -25,14 +28,30 @@ interface PublicBook {
   genre: string;
   coverUrl?: string;
   status: string;
+  ratingAvg?: number;
+  ratingCount?: number;
+}
+interface PublicReview {
+  id: string;
+  rating: number;
+  comment: string | null;
+  authorName: string;
+  authorAvatarUrl?: string;
+  targetType: "BOOK" | "USER";
+  targetName: string;
+}
+interface PublicTopReader {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+  ratingAvg: number;
+  ratingCount: number;
 }
 
 let cache: Promise<PublicHome> | null = null;
 function fetchHome(): Promise<PublicHome> {
   if (!cache) {
-    cache = api
-      .get<ApiResponse<PublicHome>>("/public/home")
-      .then((r) => r.data.data);
+    cache = api.get<ApiResponse<PublicHome>>("/public/home").then((r) => r.data.data);
   }
   return cache;
 }
@@ -44,7 +63,7 @@ const KIND_BY_TYPE: Record<string, ActivityKind> = {
   REVIEW: "rated",
 };
 
-function toLivingBook(b: PublicBook, rating: number | null): LivingBook {
+function toLivingBook(b: PublicBook): LivingBook {
   return {
     id: b.id,
     title: b.title,
@@ -53,53 +72,64 @@ function toLivingBook(b: PublicBook, rating: number | null): LivingBook {
     coverUrl: b.coverUrl,
     timesLent: 0,
     readers: 0,
-    rating: rating ?? 0,
+    rating: b.ratingAvg ?? 0,   // nota real por livro (denormalizada no backend)
   };
 }
 
 /**
- * Consome o endpoint público real. Cada método cai para o mock em caso de falha,
- * para que a landing nunca quebre por indisponibilidade do backend.
+ * Consome o endpoint público real. Sem fallback para mock: em caso de
+ * indisponibilidade, a landing exibe estados vazios (nunca dado falso).
  */
 export const apiCommunityRepository: CommunityRepository = {
   async getStats(): Promise<CommunityStats> {
-    try {
-      const h = await fetchHome();
-      return {
-        readers: h.stats.totalUsers,
-        booksShared: h.stats.totalBooks,
-        rentalsCompleted: h.stats.totalRentals,
-        ratings: 0,
-        returnRate: 1,
-      };
-    } catch {
-      return mockCommunityRepository.getStats();
-    }
+    const h = await fetchHome();
+    return {
+      readers: h.stats.totalUsers,
+      booksShared: h.stats.totalBooks,
+      rentalsCompleted: h.stats.totalRentals,
+      ratings: h.reviews.length,
+      returnRate: 1,
+      averageRating: h.stats.averageRating,
+    };
   },
 
   async getLivingBooks(): Promise<LivingBook[]> {
-    try {
-      const h = await fetchHome();
-      const source = h.featuredBooks.length ? h.featuredBooks : h.communityBooks;
-      const books = source.map((b) => toLivingBook(b, h.stats.averageRating));
-      return books.length ? books : mockCommunityRepository.getLivingBooks();
-    } catch {
-      return mockCommunityRepository.getLivingBooks();
-    }
+    const h = await fetchHome();
+    const source = h.featuredBooks.length ? h.featuredBooks : h.communityBooks;
+    return source.map(toLivingBook);
   },
 
   async getActivity(): Promise<ActivityItem[]> {
-    try {
-      const h = await fetchHome();
-      if (!h.recentActivities.length) return mockCommunityRepository.getActivity();
-      return h.recentActivities.map((a, i) => ({
-        id: `act-${i}`,
-        kind: KIND_BY_TYPE[a.type] ?? "joined",
-        actor: a.message,
-        at: a.at ?? new Date().toISOString(),
-      }));
-    } catch {
-      return mockCommunityRepository.getActivity();
-    }
+    const h = await fetchHome();
+    return h.recentActivities.map((a, i) => ({
+      id: `act-${i}`,
+      kind: KIND_BY_TYPE[a.type] ?? "joined",
+      actor: a.message,
+      at: a.at ?? new Date().toISOString(),
+    }));
+  },
+
+  async getReviews(): Promise<CommunityReview[]> {
+    const h = await fetchHome();
+    return h.reviews.map((r) => ({
+      id: r.id,
+      rating: r.rating,
+      comment: r.comment ?? "",
+      authorName: r.authorName,
+      authorAvatarUrl: r.authorAvatarUrl,
+      targetName: r.targetName,
+      targetType: r.targetType,
+    }));
+  },
+
+  async getTopReaders(): Promise<TopReader[]> {
+    const h = await fetchHome();
+    return h.topReaders.map((u) => ({
+      id: u.id,
+      name: u.name,
+      avatarUrl: u.avatarUrl,
+      ratingAvg: u.ratingAvg,
+      ratingCount: u.ratingCount,
+    }));
   },
 };
