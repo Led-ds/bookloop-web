@@ -95,5 +95,7 @@ export interface Rental {
   termAccepted: boolean;
   termSignedAt?: string;
   termSignerName?: string;
+  renewalStatus?: "REQUESTED" | "APPROVED" | "REJECTED";
+  renewalRequestedUntil?: string;
   createdAt: string;
 }
