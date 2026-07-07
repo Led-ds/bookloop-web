@@ -10,6 +10,7 @@ import { EditBookPage } from "@/features/books/EditBookPage";
 import { MyRentalsPage } from "@/features/rentals/MyRentalsPage";
 import { LendingsPage } from "@/features/rentals/LendingsPage";
 import { ProfilePage } from "@/features/profile/ProfilePage";
+import { MyReservationsPage } from "@/features/reservations/MyReservationsPage";
 import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "./ProtectedRoute";
 
@@ -48,6 +49,7 @@ export const router = createBrowserRouter([
           { path: "books/:id/edit", element: <EditBookPage /> },
           { path: "rentals", element: <MyRentalsPage /> },
           { path: "lendings", element: <LendingsPage /> },
+          { path: "reservations", element: <MyReservationsPage /> },
           { path: "profile", element: <ProfilePage /> },
         ],
       },

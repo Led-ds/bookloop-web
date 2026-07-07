@@ -5,6 +5,7 @@ import {
   ArrowLeft, BookMarked, MapPin, ShieldAlert, Loader2, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ReservationControl } from "@/features/reservations/ReservationControl";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/badge";
 import { useBook } from "./useBooks";
@@ -104,7 +105,7 @@ export function BookDetailPage() {
             ) : canRequest ? (
               <Button onClick={() => setOpen(true)}>Solicitar aluguel</Button>
             ) : (
-              <p className="text-sm text-gray-500">Indisponível para aluguel no momento.</p>
+              <ReservationControl bookId={book.id} />
             )}
           </div>
         </div>

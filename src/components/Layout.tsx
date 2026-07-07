@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { BookOpen, Library, Inbox, Plus, LogOut, ShieldAlert } from "lucide-react";
+import { BookOpen, Library, Inbox, Plus, Bookmark, LogOut, ShieldAlert } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/cn";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
@@ -45,6 +45,7 @@ export function Layout() {
             {navItem("/app", "Acervo", Library)}
             {navItem("/app/rentals", "Meus aluguéis", BookOpen)}
             {navItem("/app/lendings", "Empréstimos", Inbox)}
+            {navItem("/app/reservations", "Reservas", Bookmark)}
             {navItem("/app/books/new", "Cadastrar", Plus)}
           </nav>
 
