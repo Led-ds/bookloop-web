@@ -13,6 +13,7 @@ export interface Review {
   targetId: string;
   targetName: string;
   createdAt: string;
+  edited?: boolean;
 }
 
 /** Avaliações de um livro (rota pública, sem autenticação). */
@@ -62,5 +63,20 @@ export async function getPendingReviews(): Promise<PendingReview[]> {
 /** Cria uma avaliação (JWT). */
 export async function createReview(input: CreateReviewInput): Promise<Review> {
   const res = await api.post<ApiResponse<Review>>("/reviews", input);
+  return res.data.data;
+}
+
+export interface UpdateReviewInput {
+  id: string;
+  rating: number;
+  comment?: string;
+}
+
+/** Edita uma avaliação existente (apenas o autor; JWT). */
+export async function updateReview(input: UpdateReviewInput): Promise<Review> {
+  const res = await api.put<ApiResponse<Review>>(`/reviews/${input.id}`, {
+    rating: input.rating,
+    comment: input.comment,
+  });
   return res.data.data;
 }
