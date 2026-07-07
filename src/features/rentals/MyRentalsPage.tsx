@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookX, Calendar, Library } from "lucide-react";
+import { BookX, Calendar, Library, Star } from "lucide-react";
 import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RowListSkeleton, EmptyState } from "@/components/ui/skeleton";
@@ -7,6 +8,8 @@ import { useToast } from "@/components/ui/toast";
 import { apiError } from "@/lib/apiError";
 import { useMyRentals, useRentalAction, type RentalActionType } from "./useRentals";
 import type { Rental } from "@/types";
+import { usePendingReviews } from "@/features/reviews/useReviews";
+import { ReviewDialog } from "@/features/reviews/ReviewDialog";
 
 function fmt(d?: string) {
   return d ? new Date(d).toLocaleDateString("pt-BR") : "—";
@@ -74,6 +77,11 @@ export function RentalRow({
   onAction: (a: RentalActionType) => void;
   busy: boolean;
 }) {
+  const [reviewing, setReviewing] = useState(false);
+  const { data: pending = [] } = usePendingReviews();
+  const canReview = pending.find((p) => p.rentalId === r.id);
+  const showReview = r.status === "RETURNED" && !!canReview && (canReview.canReviewBook || canReview.canReviewUser);
+
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex items-start justify-between gap-2">
@@ -109,7 +117,16 @@ export function RentalRow({
         {role === "renter" && (r.status === "PENDING" || r.status === "APPROVED") && (
           <Button variant="outline" onClick={() => onAction("cancel")} disabled={busy}>Cancelar</Button>
         )}
+        {showReview && (
+          <Button variant="outline" onClick={() => setReviewing(true)}>
+            <Star className="h-4 w-4" /> Avaliar
+          </Button>
+        )}
       </div>
+
+      {reviewing && canReview && (
+        <ReviewDialog pending={canReview} onClose={() => setReviewing(false)} />
+      )}
     </div>
   );
 }
