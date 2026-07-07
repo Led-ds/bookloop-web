@@ -27,8 +27,14 @@ export async function myLendings(page = 0) {
 
 export async function rentalAction(
   id: string,
-  action: "approve" | "reject" | "activate" | "cancel" | "return" | "return-request" | "return-confirm",
+  action: "approve" | "reject" | "activate" | "cancel" | "return" | "return-request" | "return-confirm" | "renewal-approve" | "renewal-reject",
 ) {
   const res = await api.post<ApiResponse<Rental>>(`/rentals/${id}/${action}`);
+  return res.data.data;
+}
+
+/** Locatário solicita renovação (nova data de fim). Dono aprova/rejeita via rentalAction. */
+export async function requestRenewal(id: string, newEndDate: string): Promise<Rental> {
+  const res = await api.post<ApiResponse<Rental>>(`/rentals/${id}/renewal-request`, { newEndDate });
   return res.data.data;
 }

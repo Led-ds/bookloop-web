@@ -5,8 +5,8 @@ import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RowListSkeleton, EmptyState } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
-import { apiError } from "@/lib/apiError";
-import { useMyRentals, useRentalAction, type RentalActionType } from "./useRentals";
+import { apiError, apiErrorCode } from "@/lib/apiError";
+import { useMyRentals, useRentalAction, useRequestRenewal, type RentalActionType } from "./useRentals";
 import type { Rental } from "@/types";
 import { usePendingReviews } from "@/features/reviews/useReviews";
 import { ReviewDialog } from "@/features/reviews/ReviewDialog";
@@ -23,6 +23,8 @@ const ACTION_DONE: Record<RentalActionType, string> = {
   return: "Devolução registrada.",
   "return-request": "Devolução marcada. Aguardando o dono confirmar o recebimento.",
   "return-confirm": "Recebimento confirmado. Empréstimo devolvido.",
+  "renewal-approve": "Renovação aprovada.",
+  "renewal-reject": "Renovação rejeitada.",
 };
 
 /** Hook local que aplica uma ação e dá feedback via toast. Reusado por MyRentals e Lendings. */
@@ -80,6 +82,21 @@ export function RentalRow({
   busy: boolean;
 }) {
   const [reviewing, setReviewing] = useState(false);
+  const [renewOpen, setRenewOpen] = useState(false);
+  const [newEndDate, setNewEndDate] = useState("");
+  const renewal = useRequestRenewal();
+  const { success, error } = useToast();
+  const submitRenewal = () => {
+    if (!newEndDate) { error("Escolha a nova data de devolução."); return; }
+    renewal.mutate({ id: r.id, newEndDate }, {
+      onSuccess: () => { success("Pedido de renovação enviado ao dono."); setRenewOpen(false); },
+      onError: (e) => {
+        if (apiErrorCode(e) === "RENEWAL_BLOCKED_BY_QUEUE") {
+          error("Não dá pra renovar: há gente na fila de reserva deste livro.");
+        } else { error(apiError(e)); }
+      },
+    });
+  };
   const { data: pending = [] } = usePendingReviews();
   const canReview = pending.find((p) => p.rentalId === r.id);
   const showReview = r.status === "RETURNED" && !!canReview && (canReview.canReviewBook || canReview.canReviewUser);
@@ -125,12 +142,46 @@ export function RentalRow({
         {role === "renter" && (r.status === "PENDING" || r.status === "APPROVED") && (
           <Button variant="outline" onClick={() => onAction("cancel")} disabled={busy}>Cancelar</Button>
         )}
+        {role === "renter" && (r.status === "ACTIVE" || r.status === "OVERDUE") && r.renewalStatus !== "REQUESTED" && (
+          <Button variant="outline" onClick={() => setRenewOpen((v) => !v)} disabled={busy}>Solicitar renovação</Button>
+        )}
+        {role === "renter" && r.renewalStatus === "REQUESTED" && (
+          <span className="rounded-full bg-orange-100 px-2 py-1 text-xs text-orange-800">
+            Renovação solicitada{r.renewalRequestedUntil ? ` até ${fmt(r.renewalRequestedUntil)}` : ""} — aguardando o dono
+          </span>
+        )}
+        {role === "owner" && r.renewalStatus === "REQUESTED" && (
+          <>
+            <span className="self-center text-xs text-gray-600">
+              Renovação pedida{r.renewalRequestedUntil ? ` até ${fmt(r.renewalRequestedUntil)}` : ""}:
+            </span>
+            <Button onClick={() => onAction("renewal-approve")} disabled={busy}>Aprovar renovação</Button>
+            <Button variant="danger" onClick={() => onAction("renewal-reject")} disabled={busy}>Rejeitar</Button>
+          </>
+        )}
         {showReview && (
           <Button variant="outline" onClick={() => setReviewing(true)}>
             <Star className="h-4 w-4" /> Avaliar
           </Button>
         )}
       </div>
+
+      {renewOpen && (
+        <div className="mt-3 rounded-lg border border-gray-200 p-3">
+          <label className="text-sm text-gray-700">Nova data de devolução</label>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <input
+              type="date"
+              value={newEndDate}
+              min={r.endDate?.slice(0, 10)}
+              onChange={(e) => setNewEndDate(e.target.value)}
+              className="rounded-lg border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+            <Button onClick={submitRenewal} disabled={renewal.isPending}>Enviar pedido</Button>
+            <Button variant="outline" onClick={() => setRenewOpen(false)} disabled={renewal.isPending}>Cancelar</Button>
+          </div>
+        </div>
+      )}
 
       {reviewing && canReview && (
         <ReviewDialog pending={canReview} onClose={() => setReviewing(false)} />
