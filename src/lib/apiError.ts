@@ -64,3 +64,15 @@ export function apiFieldErrors(err: unknown): Record<string, string> {
   }
   return {};
 }
+
+/**
+ * Código estável de erro que o backend pode enviar em `data.code`
+ * (ex.: "BOOK_ALREADY_RESERVED"). Permite ao chamador ramificar por cenário.
+ */
+export function apiErrorCode(err: unknown): string | null {
+  if (err instanceof AxiosError) {
+    const code = err.response?.data?.data?.code;
+    if (typeof code === "string" && code.length > 0) return code;
+  }
+  return null;
+}
