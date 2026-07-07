@@ -4,7 +4,8 @@ import {
   type CreateRentalInput,
 } from "@/api/rentals";
 
-export type RentalActionType = "approve" | "reject" | "activate" | "cancel" | "return";
+export type RentalActionType =
+  | "approve" | "reject" | "activate" | "cancel" | "return" | "return-request" | "return-confirm";
 
 export function useMyRentals() {
   return useQuery({ queryKey: ["rentals", "mine"], queryFn: () => myRentals() });

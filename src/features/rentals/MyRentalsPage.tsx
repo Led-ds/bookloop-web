@@ -21,6 +21,8 @@ const ACTION_DONE: Record<RentalActionType, string> = {
   activate: "Empréstimo marcado como entregue.",
   cancel: "Solicitação cancelada.",
   return: "Devolução registrada.",
+  "return-request": "Devolução marcada. Aguardando o dono confirmar o recebimento.",
+  "return-confirm": "Recebimento confirmado. Empréstimo devolvido.",
 };
 
 /** Hook local que aplica uma ação e dá feedback via toast. Reusado por MyRentals e Lendings. */
@@ -111,8 +113,14 @@ export function RentalRow({
         {role === "owner" && r.status === "APPROVED" && (
           <Button onClick={() => onAction("activate")} disabled={busy}>Marcar como entregue</Button>
         )}
+        {role === "renter" && (r.status === "ACTIVE" || r.status === "OVERDUE") && (
+          <Button onClick={() => onAction("return-request")} disabled={busy}>Devolvi</Button>
+        )}
         {role === "owner" && (r.status === "ACTIVE" || r.status === "OVERDUE") && (
           <Button onClick={() => onAction("return")} disabled={busy}>Registrar devolução</Button>
+        )}
+        {role === "owner" && r.status === "RETURN_REQUESTED" && (
+          <Button onClick={() => onAction("return-confirm")} disabled={busy}>Confirmar recebimento</Button>
         )}
         {role === "renter" && (r.status === "PENDING" || r.status === "APPROVED") && (
           <Button variant="outline" onClick={() => onAction("cancel")} disabled={busy}>Cancelar</Button>

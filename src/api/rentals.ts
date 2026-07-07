@@ -25,7 +25,10 @@ export async function myLendings(page = 0) {
   return res.data.data;
 }
 
-export async function rentalAction(id: string, action: "approve" | "reject" | "activate" | "cancel" | "return") {
+export async function rentalAction(
+  id: string,
+  action: "approve" | "reject" | "activate" | "cancel" | "return" | "return-request" | "return-confirm",
+) {
   const res = await api.post<ApiResponse<Rental>>(`/rentals/${id}/${action}`);
   return res.data.data;
 }

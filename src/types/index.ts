@@ -42,7 +42,7 @@ export interface AuthResponse {
 
 export type BookStatus = "AVAILABLE" | "RESERVED" | "RENTED";
 export type RentalStatus =
-  | "PENDING" | "APPROVED" | "ACTIVE" | "RETURNED" | "OVERDUE" | "REJECTED" | "CANCELLED";
+  | "PENDING" | "APPROVED" | "ACTIVE" | "RETURN_REQUESTED" | "RETURNED" | "OVERDUE" | "REJECTED" | "CANCELLED";
 
 export interface BookSummary {
   id: string;

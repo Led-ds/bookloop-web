@@ -9,6 +9,7 @@ const labels: Record<string, { text: string; cls: string }> = {
   PENDING:  { text: "Pendente",  cls: "bg-amber-100 text-amber-800" },
   APPROVED: { text: "Aprovado",  cls: "bg-blue-100 text-blue-800" },
   ACTIVE:   { text: "Ativo",     cls: "bg-green-100 text-green-800" },
+  RETURN_REQUESTED: { text: "Devolução pendente", cls: "bg-orange-100 text-orange-800" },
   RETURNED: { text: "Devolvido", cls: "bg-gray-100 text-gray-700" },
   OVERDUE:  { text: "Atrasado",  cls: "bg-red-100 text-red-800" },
   LATE:     { text: "Atrasado",  cls: "bg-red-100 text-red-800" },
