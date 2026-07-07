@@ -32,3 +32,35 @@ export async function getUserReviews(userId: string, page = 0, size = 10) {
   );
   return res.data.data;
 }
+
+/** Espelha o PendingReviewResponse: o que o usuário logado ainda pode avaliar. */
+export interface PendingReview {
+  rentalId: string;
+  bookId: string;
+  bookTitle: string;
+  bookCoverUrl?: string;
+  counterpartId: string;
+  counterpartName: string;
+  canReviewBook: boolean;
+  canReviewUser: boolean;
+}
+
+export interface CreateReviewInput {
+  rentalId: string;
+  type: "BOOK" | "USER";
+  targetUserId?: string;
+  rating: number;
+  comment?: string;
+}
+
+/** Aluguéis devolvidos com algo ainda a avaliar (JWT). */
+export async function getPendingReviews(): Promise<PendingReview[]> {
+  const res = await api.get<ApiResponse<PendingReview[]>>("/reviews/pending");
+  return res.data.data;
+}
+
+/** Cria uma avaliação (JWT). */
+export async function createReview(input: CreateReviewInput): Promise<Review> {
+  const res = await api.post<ApiResponse<Review>>("/reviews", input);
+  return res.data.data;
+}
