@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft, BookMarked, MapPin, ShieldAlert, Loader2, X,
@@ -11,7 +12,7 @@ import { useBookReviews } from "@/features/reviews/useReviews";
 import { ReviewList, RatingSummary } from "@/features/reviews/ReviewList";
 import { useRequestRental } from "@/features/rentals/useRentals";
 import { useAuthStore } from "@/store/authStore";
-import { apiError } from "@/lib/apiError";
+import { apiError, apiErrorKind, apiErrorCode } from "@/lib/apiError";
 import { useToast } from "@/components/ui/toast";
 
 function todayPlus(days: number) {
@@ -146,7 +147,8 @@ function RentalModal({
   onDone: () => void;
 }) {
   const request = useRequestRental();
-  const { success } = useToast();
+  const qc = useQueryClient();
+  const { success, error } = useToast();
   const [message, setMessage] = useState("");
   const [startDate, setStartDate] = useState(todayPlus(1));
   const [endDate, setEndDate] = useState(todayPlus(15));
@@ -160,6 +162,16 @@ function RentalModal({
         onSuccess: () => {
           success("Solicitação enviada. O dono do livro vai avaliar.");
           onDone();
+        },
+        onError: (err) => {
+          // Concorrência: alguém solicitou primeiro. O livro já não está mais
+          // disponível — avisa, atualiza o status na tela e fecha o modal.
+          if (apiErrorCode(err) === "BOOK_ALREADY_RESERVED" || apiErrorKind(err) === "conflict") {
+            error("Poxa, alguém solicitou primeiro — este livro já foi reservado.");
+            qc.invalidateQueries({ queryKey: ["books"] });
+            onClose();
+          }
+          // Demais erros continuam aparecendo inline (request.isError) abaixo.
         },
       }
     );
