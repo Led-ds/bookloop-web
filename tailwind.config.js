@@ -26,6 +26,12 @@ export default {
         border: "#E1DACC",
         input: "#EBE4D6",
         ring: "#336144",
+        // Cores de lombada — assinatura visual por comunidade
+        "spine-forest": "#20462F", "spine-leather": "#6B3F2B",
+        "spine-burgundy": "#7A2E2E", "spine-indigo": "#2C4A63",
+        "spine-olive": "#5B5230", "spine-plum": "#4A2F4E",
+        "spine-teal": "#1F5B58", "spine-mustard": "#8A5A22",
+        "success-text": "#2F7042", "warning-text": "#8A5E10",
         // Escala legada (componentes existentes continuam funcionando).
         brand: {
           50: "#eef7f3", 100: "#d4ebe0", 200: "#aedac6", 300: "#7fc3a4",
@@ -35,6 +41,7 @@ export default {
       },
       fontFamily: {
         display: ['"Fraunces"', "Georgia", "serif"],
+        mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
     },
   },

@@ -17,3 +17,20 @@ h1, h2, h3 {
   font-family: "Fraunces", Georgia, serif;
   letter-spacing: -0.01em;
 }
+
+/* Carrossel flutuante de livros (landing) — 3 colunas em ritmos diferentes */
+@keyframes bookloop-marquee-y {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+.marquee-y         { animation: bookloop-marquee-y 70s linear infinite; }
+.marquee-y-slow    { animation: bookloop-marquee-y 95s linear infinite; }
+.marquee-y-reverse { animation: bookloop-marquee-y 82s linear infinite reverse; }
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+          mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-y, .marquee-y-slow, .marquee-y-reverse { animation: none; }
+}
