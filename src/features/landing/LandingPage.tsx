@@ -1,59 +1,29 @@
-// Landing pública do BookLoop — port fiel do template (verde-floresta + creme, Fraunces).
-import { Navigate, Link } from "react-router-dom";
-import { BookOpen, Users, Shield, Sprout, Sparkles, Quote } from "lucide-react";
-import { useAuthStore } from "@/store/authStore";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { StarRating } from "@/components/ui/star-rating";
-import { genreLabel } from "@/lib/constants";
-import { CommunityProvider, useLivingBooks, useCommunityReviews, useCommunityStats } from "./data/CommunityProvider";
-import type { LivingBook } from "./data/types";
-
-const btn = {
-  primary:
-    "inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-  primaryLg:
-    "inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition hover:opacity-90",
-  outline:
-    "inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-transparent px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-secondary/60",
-  outlineLg:
-    "inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-transparent px-6 py-3 text-base font-medium text-foreground transition hover:bg-secondary/60",
-  ghost:
-    "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary/60",
-};
-
-const HERO_AVATARS = [
-  "https://i.pravatar.cc/64?img=47", "https://i.pravatar.cc/64?img=32",
-  "https://i.pravatar.cc/64?img=12", "https://i.pravatar.cc/64?img=5",
-];
+import { Link } from "react-router-dom";
+import {
+  BookOpen, Users, Shield, ArrowRight, KeyRound, Sparkles,
+  Church, GraduationCap, Coffee, Heart, Check,
+} from "lucide-react";
+import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 
 export function LandingPage() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  if (isAuthenticated) return <Navigate to="/app" replace />;
   return (
-    <CommunityProvider>
-      <LandingContent />
-    </CommunityProvider>
-  );
-}
-
-function LandingContent() {
-  const { data: books = [], isLoading } = useLivingBooks();
-  const { data: reviews = [] } = useCommunityReviews();
-  const { data: stats } = useCommunityStats();
-  const avgRating = stats?.averageRating ?? null;
-
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* NAV */}
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur">
+    <div className="min-h-screen bg-background">
+      {/* HEADER */}
+      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-primary" />
             <span className="font-display text-xl font-bold text-primary">BookLoop</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Link to="/login" className={btn.ghost}>Entrar</Link>
-            <Link to="/register" className={btn.primary}>Criar conta</Link>
+            <Link to="/login">
+              <Button variant="ghost"><KeyRound className="h-4 w-4" /> Acessar comunidade</Button>
+            </Link>
+            <Link to="/register">
+              <Button><Sparkles className="h-4 w-4" /> Criar comunidade</Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -62,173 +32,123 @@ function LandingContent() {
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute -right-32 top-40 h-96 w-96 rounded-full bg-accent/40 blur-3xl" />
-
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 md:grid-cols-[1.05fr_1fr] md:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 md:grid-cols-[1.1fr_1fr] md:py-28">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1 text-xs font-medium text-secondary-foreground">
-              <Sprout className="h-3 w-3" /> Comunidade leitora colaborativa
+              <Heart className="h-3 w-3" /> Compartilhar livros nunca foi tão simples
             </span>
             <h1 className="mt-4 font-display text-4xl font-bold leading-[1.05] md:text-6xl">
-              Sua próxima leitura<br />
-              está na estante <span className="text-primary">de alguém</span>.
+              Sua comunidade de leitura,<br />
+              <span className="text-primary">privada e sua</span>.
             </h1>
-            <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-              O BookLoop conecta leitores próximos para emprestar, alugar e avaliar livros —
-              sem custo, só com confiança, responsabilidade e amor pela leitura.
+            <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+              O BookLoop conecta comunidades de amigos, igrejas, escolas e clubes de leitura
+              para compartilhar livros com controle, responsabilidade e confiança.
+              Cada comunidade é uma rede fechada — só quem você convida participa.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link to="/register" className={btn.primaryLg}>Criar conta grátis</Link>
-              <Link to="/login" className={btn.outlineLg}>Já tenho conta</Link>
-            </div>
-
-            <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-              {avgRating != null && (
-                <div className="flex items-center gap-2">
-                  <StarRating value={avgRating} size={14} showValue />
-                  <span>de avaliação média</span>
-                </div>
-              )}
-              <div className="flex -space-x-2">
-                {HERO_AVATARS.map((src, i) => (
-                  <Avatar key={i} className="h-8 w-8 border-2 border-background">
-                    <AvatarImage src={src} />
-                    <AvatarFallback>{String.fromCharCode(65 + i)}</AvatarFallback>
-                  </Avatar>
-                ))}
-              </div>
-              <span>+ leitores ativos</span>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/register">
+                <Button size="lg">Criar minha comunidade grátis <ArrowRight className="h-4 w-4" /></Button>
+              </Link>
+              <Link to="/login">
+                <Button size="lg" variant="outline">Tenho um código de acesso</Button>
+              </Link>
             </div>
           </div>
+          <FloatingBookCarousel />
+        </div>
+      </section>
 
-          {/* Colagem de capas */}
-          <div className="relative">
-            <div className="grid grid-cols-3 gap-3">
-              {(isLoading ? Array.from({ length: 6 }) : books.slice(0, 6)).map((b, i) => {
-                const book = b as LivingBook | undefined;
-                return (
-                  <div
-                    key={book?.id ?? i}
-                    className={`group relative overflow-hidden rounded-xl bg-muted shadow-lg transition hover:-translate-y-1 ${i % 2 ? "translate-y-6" : ""}`}
-                  >
-                    {book?.coverUrl ? (
-                      <img src={book.coverUrl} alt={book.title} loading="lazy"
-                        className="aspect-[2/3] w-full object-cover transition group-hover:scale-105" />
-                    ) : (
-                      <div className="flex aspect-[2/3] w-full items-center justify-center">
-                        <BookOpen className="h-8 w-8 text-border" />
-                      </div>
-                    )}
-                    {book && (
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-                        <p className="line-clamp-1 text-xs font-medium text-white">{book.title}</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+      {/* MOMENTOS */}
+      <section className="border-y border-border bg-secondary/30">
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <div className="text-center">
+            <span className="text-xs font-semibold uppercase tracking-wider text-primary">O que sua comunidade vai compartilhar</span>
+            <h2 className="mt-2 font-display text-3xl font-semibold md:text-4xl">Imagine os livros passando de mão em mão</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+              O BookLoop nasce para comunidades reais: amigos, igrejas, escolas, clubes de leitura.
+              Cada troca vira história, cada livro vira conexão.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-12">
+            <MomentCard className="lg:col-span-7" image="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&q=80"
+              title="Seu livro favorito nas mãos de quem você confia"
+              caption="Emprestar para quem faz parte da sua comunidade é saber que o cuidado vem junto." />
+            <MomentCard className="lg:col-span-5" image="https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=600&q=80"
+              title="Conversas que começam depois da última página"
+              caption="Discussões, indicações e descobertas que só acontecem entre pessoas próximas." />
+            <MomentCard className="lg:col-span-5" image="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80"
+              title="Uma estante coletiva, organizada e viva"
+              caption="Cada membro cadastra seus livros. O acervo da comunidade cresce naturalmente." />
+            <MomentCard className="lg:col-span-7" image="https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=800&q=80"
+              title="Encontros marcados por histórias em comum"
+              caption="Do clube de leitura ao café com amigos, os livros viram encontro." />
           </div>
         </div>
       </section>
 
-      {/* VITRINE */}
+      {/* COMO FUNCIONA */}
       <section className="border-t border-border bg-secondary/30">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
-                <Sparkles className="h-3 w-3" /> Vitrine da comunidade
-              </span>
-              <h2 className="mt-2 font-display text-3xl font-semibold md:text-4xl">
-                Livros esperando um novo leitor
-              </h2>
-              <p className="mt-2 max-w-xl text-muted-foreground">
-                Todos cadastrados por membros do BookLoop. Crie sua conta para pedir emprestado.
-              </p>
-            </div>
-            <Link to="/register" className={btn.outline}>Explorar catálogo</Link>
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <div className="text-center">
+            <span className="text-xs font-semibold uppercase tracking-wider text-primary">Como funciona</span>
+            <h2 className="mt-2 font-display text-3xl font-semibold md:text-4xl">Três passos para começar</h2>
           </div>
-
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {books.map((b, i) => (
-              <ShowcaseCard key={b.id} book={b} featured={i === 0} />
-            ))}
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            <Step n={1} icon={<Sparkles className="h-5 w-5" />} title="Crie sua comunidade"
+              text="Escolha um nome e uma descrição. Você vira o administrador." />
+            <Step n={2} icon={<Users className="h-5 w-5" />} title="Convide pessoas"
+              text="Envie o código ou um link de convite. Só quem tem o código entra." />
+            <Step n={3} icon={<BookOpen className="h-5 w-5" />} title="Compartilhem livros"
+              text="Cada um cadastra sua estante. Empréstimos, avaliações e histórico ficam dentro da comunidade." />
           </div>
         </div>
       </section>
 
-      {/* MURAL DE AVALIAÇÕES */}
+      {/* PARA QUEM É */}
       <section className="mx-auto max-w-6xl px-4 py-20">
-        <div className="mb-10 text-center">
-          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
-            <Quote className="h-3 w-3" /> Vozes da comunidade
-          </span>
-          <h2 className="mt-2 font-display text-3xl font-semibold md:text-4xl">
-            Quem empresta, quem lê — quem avalia.
-          </h2>
-          <p className="mx-auto mt-2 max-w-xl text-muted-foreground">
-            A cada empréstimo, leitores avaliam uns aos outros com até 5 estrelas.
-            Confiança que se constrói livro após livro.
+        <div className="text-center">
+          <span className="text-xs font-semibold uppercase tracking-wider text-primary">Pra quem é</span>
+          <h2 className="mt-2 font-display text-3xl font-semibold md:text-4xl">Feito para comunidades reais</h2>
+          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+            Se vocês já compartilham livros no WhatsApp, o BookLoop dá organização,
+            histórico e confiança para essa troca.
           </p>
         </div>
-
-        {reviews.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card/40 px-6 py-14 text-center text-muted-foreground">
-            Ainda não há avaliações por aqui. Assim que os primeiros empréstimos forem
-            devolvidos e avaliados, as vozes da comunidade aparecem neste mural.
-          </div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-3">
-            {reviews.slice(0, 6).map((r) => (
-              <article key={r.id}
-                className="relative flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                <Quote className="absolute right-4 top-4 h-8 w-8 text-primary/10" />
-                <StarRating value={r.rating} size={16} />
-                {r.comment && <p className="text-sm leading-relaxed text-foreground/90">"{r.comment}"</p>}
-                <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
-                  <Avatar>
-                    <AvatarImage src={r.authorAvatarUrl} />
-                    <AvatarFallback>{r.authorName[0]}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{r.authorName}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      avaliou {r.targetType === "BOOK" ? "o livro " : ""}{r.targetName}
-                    </p>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Persona icon={<Coffee className="h-5 w-5" />} title="Amigos" text="Aquela turma que sempre indica leitura." />
+          <Persona icon={<Church className="h-5 w-5" />} title="Igreja" text="Biblioteca comunitária organizada e sem perdas." />
+          <Persona icon={<GraduationCap className="h-5 w-5" />} title="Escola" text="Alunos, professores e pais compartilhando estantes." />
+          <Persona icon={<BookOpen className="h-5 w-5" />} title="Clube de leitura" text="Um livro roda entre todos, cada mês." />
+        </div>
       </section>
 
       {/* BENEFÍCIOS */}
       <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="text-center font-display text-3xl font-semibold md:text-4xl">
-            Por que o BookLoop?
-          </h2>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            <Benefit icon={<BookOpen className="h-6 w-6" />} title="Sua estante, infinita"
-              text="Acesse livros de outros leitores sem gastar nada — só compromisso de devolver bem." />
-            <Benefit icon={<Users className="h-6 w-6" />} title="Comunidade avaliada"
-              text="Cada aluguel gera avaliação mútua. Leitores confiáveis brilham com 5 estrelas." />
-            <Benefit icon={<Shield className="h-6 w-6" />} title="Confiança protegida"
-              text="Termo de responsabilidade digital, histórico e reputação para todos." />
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <div className="grid gap-8 md:grid-cols-3">
+            <Benefit icon={<Shield className="h-6 w-6" />} title="Privacidade total"
+              text="Cada comunidade é uma ilha. Ninguém de fora vê seus livros, membros ou empréstimos." />
+            <Benefit icon={<Check className="h-6 w-6" />} title="Controle e histórico"
+              text="Termo digital, avaliações mútuas e histórico completo de cada empréstimo." />
+            <Benefit icon={<Users className="h-6 w-6" />} title="Comunidade de verdade"
+              text="Você entra em quantas comunidades quiser: casa, trabalho, igreja. Cada um com seu papel." />
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-3xl px-4 py-20 text-center">
+      {/* CTA FINAL */}
+      <section className="mx-auto max-w-3xl px-4 py-24 text-center">
         <h2 className="font-display text-3xl font-semibold md:text-4xl">
-          Pronto para começar a girar livros?
+          Pronto para começar a girar livros com sua comunidade?
         </h2>
         <p className="mt-3 text-muted-foreground">
-          Cadastre-se agora e veja livros disponíveis perto de você.
+          Sem cartão, sem plano pago. Crie sua comunidade em menos de um minuto.
         </p>
-        <Link to="/register" className={`${btn.primaryLg} mt-6`}>Criar minha conta</Link>
+        <div className="mt-8 flex justify-center gap-3">
+          <Link to="/register"><Button size="lg">Criar minha comunidade</Button></Link>
+          <Link to="/login"><Button size="lg" variant="outline">Acessar comunidade existente</Button></Link>
+        </div>
       </section>
 
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
@@ -238,37 +158,41 @@ function LandingContent() {
   );
 }
 
-function ShowcaseCard({ book, featured }: { book: LivingBook; featured?: boolean }) {
+function Step({ n, icon, title, text }: { n: number; icon: ReactNode; title: string; text: string }) {
   return (
-    <Link to="/register"
-      className={`group relative block overflow-hidden rounded-xl border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-xl ${featured ? "col-span-2 row-span-2" : ""}`}>
-      <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
-        {book.coverUrl ? (
-          <img src={book.coverUrl} alt={book.title} loading="lazy"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <BookOpen className="h-8 w-8 text-border" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-90" />
-        <div className="absolute inset-x-0 bottom-0 space-y-1 p-3 text-white">
-          <p className={`line-clamp-2 font-display font-semibold ${featured ? "text-lg" : "text-sm"}`}>{book.title}</p>
-          <p className="line-clamp-1 text-[11px] text-white/70">{book.author}</p>
-          <div className="flex items-center gap-2 pt-1">
-            <StarRating value={book.rating ?? 0} size={12} />
-            <span className="text-[10px] text-white/70">{(book.rating ?? 0).toFixed(1)}</span>
-          </div>
-        </div>
-        <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-foreground">
-          {genreLabel(book.genre)}
-        </span>
-      </div>
-    </Link>
+    <div className="relative rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <div className="absolute -top-3 left-6 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-primary-foreground">Passo {n}</div>
+      <div className="mt-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">{icon}</div>
+      <h3 className="mt-4 font-display text-lg font-semibold">{title}</h3>
+      <p className="mt-2 text-sm text-muted-foreground">{text}</p>
+    </div>
   );
 }
 
-function Benefit({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+function MomentCard({ image, title, caption, className }: { image: string; title: string; caption: string; className?: string }) {
+  return (
+    <div className={cn("group relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-lg", className)}>
+      <img src={image} alt={title} loading="lazy" className="h-64 w-full object-cover transition duration-700 group-hover:scale-105 sm:h-80" />
+      <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 p-5 text-primary-foreground">
+        <h3 className="font-display text-xl font-semibold">{title}</h3>
+        <p className="mt-1 text-sm text-white/90">{caption}</p>
+      </div>
+    </div>
+  );
+}
+
+function Persona({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 text-center shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">{icon}</div>
+      <h3 className="mt-3 font-semibold">{title}</h3>
+      <p className="mt-1 text-xs text-muted-foreground">{text}</p>
+    </div>
+  );
+}
+
+function Benefit({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">{icon}</div>
@@ -278,4 +202,52 @@ function Benefit({ icon, title, text }: { icon: React.ReactNode; title: string; 
   );
 }
 
-export default LandingPage;
+const CAROUSEL_BOOKS = [
+  { title: "Dom Casmurro", author: "Machado de Assis", cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80" },
+  { title: "Duna", author: "Frank Herbert", cover: "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=400&q=80" },
+  { title: "A Hora da Estrela", author: "Clarice Lispector", cover: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&q=80" },
+  { title: "O Nome do Vento", author: "P. Rothfuss", cover: "https://images.unsplash.com/photo-1531072901881-d644216d4bf9?w=400&q=80" },
+  { title: "A Casa dos Espíritos", author: "Isabel Allende", cover: "https://images.unsplash.com/photo-1495640388908-05fa85288e61?w=400&q=80" },
+  { title: "Clean Code", author: "Robert C. Martin", cover: "https://images.unsplash.com/photo-1517842645767-c639042777db?w=400&q=80" },
+  { title: "Mindset", author: "Carol Dweck", cover: "https://images.unsplash.com/photo-1592496001020-d31bd830651f?w=400&q=80" },
+  { title: "Capitães da Areia", author: "Jorge Amado", cover: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&q=80" },
+  { title: "Steve Jobs", author: "W. Isaacson", cover: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400&q=80" },
+  { title: "Zaratustra", author: "Nietzsche", cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80" },
+  { title: "Grande Sertão", author: "G. Rosa", cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400&q=80" },
+  { title: "Silêncio dos Inocentes", author: "T. Harris", cover: "https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=400&q=80" },
+];
+
+function FloatingBookCarousel() {
+  const col1 = [...CAROUSEL_BOOKS.slice(0, 6), ...CAROUSEL_BOOKS.slice(0, 6)];
+  const col2 = [...CAROUSEL_BOOKS.slice(6, 12), ...CAROUSEL_BOOKS.slice(6, 12)];
+  const col3 = [...CAROUSEL_BOOKS.slice(3, 9), ...CAROUSEL_BOOKS.slice(3, 9)];
+  return (
+    <div className="relative">
+      <div className="marquee-mask relative h-[480px] overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-secondary/40 via-background to-accent/20 p-3 shadow-xl">
+        <div className="grid h-full grid-cols-3 gap-3">
+          <CarouselColumn books={col1} className="marquee-y" />
+          <CarouselColumn books={col2} className="marquee-y-reverse" />
+          <CarouselColumn books={col3} className="marquee-y-slow" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CarouselColumn({ books, className }: { books: typeof CAROUSEL_BOOKS; className: string }) {
+  return (
+    <div className="relative overflow-hidden">
+      <div className={cn("flex flex-col gap-3", className)}>
+        {books.map((b, i) => (
+          <div key={`${b.title}-${i}`} className="group relative aspect-[2/3] overflow-hidden rounded-lg border border-border bg-muted shadow-sm">
+            <img src={b.cover} alt={b.title} loading="lazy" className="h-full w-full object-cover" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5">
+              <p className="line-clamp-1 text-[10px] font-semibold text-white">{b.title}</p>
+              <p className="line-clamp-1 text-[9px] text-white/70">{b.author}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

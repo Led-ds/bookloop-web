@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useOrganizationStore } from "@/store/organizationStore";
 import { BookOpen, Library, Inbox, Plus, Bookmark, LogOut, ShieldAlert } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/cn";
@@ -6,6 +7,8 @@ import { NotificationBell } from "@/features/notifications/components/Notificati
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export function Layout() {
+  const activeOrgId = useOrganizationStore((s) => s.activeOrgId);
+  const base = `/app/${activeOrgId}`;
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -20,7 +23,7 @@ export function Layout() {
   const navItem = (to: string, label: string, Icon: typeof Library) => (
     <NavLink
       to={to}
-      end={to === "/app"}
+      end={to === base}
       className={({ isActive }) =>
         cn(
           "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition",
@@ -36,24 +39,25 @@ export function Layout() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link to="/app" className="flex items-center gap-2 text-primary">
+          <Link to={base} className="flex items-center gap-2 text-primary">
             <BookOpen className="h-6 w-6" />
             <span className="text-lg font-bold">BookLoop</span>
           </Link>
 
           <nav className="flex items-center gap-1">
-            {navItem("/app", "Acervo", Library)}
-            {navItem("/app/rentals", "Meus aluguéis", BookOpen)}
-            {navItem("/app/lendings", "Empréstimos", Inbox)}
-            {navItem("/app/reservations", "Reservas", Bookmark)}
-            {navItem("/app/books/new", "Cadastrar", Plus)}
+            {navItem(base, "Acervo", Library)}
+            {navItem(`${base}/rentals`, "Meus aluguéis", BookOpen)}
+            {navItem(`${base}/lendings`, "Empréstimos", Inbox)}
+            {navItem(`${base}/reservations`, "Reservas", Bookmark)}
+            {navItem(`${base}/books/new`, "Cadastrar", Plus)}
+            <NavLink to="/app" className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground">Trocar comunidade</NavLink>
           </nav>
 
           <div className="flex items-center gap-3">
             <NotificationBell />
             {user && (
               <Link
-                to="/app/profile"
+                to="/perfil"
                 className="flex items-center gap-2 hover:opacity-80"
                 title="Meu perfil"
               >
