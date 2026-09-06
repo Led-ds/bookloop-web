@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { orgPath } from "@/lib/orgPath";
 import type { ApiResponse, Book, BookSummary, PageResponse } from "@/types";
 
 export interface BookFilters {
@@ -10,19 +11,19 @@ export interface BookFilters {
 }
 
 export async function searchBooks(filters: BookFilters) {
-  const res = await api.get<ApiResponse<PageResponse<BookSummary>>>("/books", { params: filters });
+  const res = await api.get<ApiResponse<PageResponse<BookSummary>>>(orgPath("/books"), { params: filters });
   return res.data.data;
 }
 
 export async function myBooks(page = 0, size = 24) {
-  const res = await api.get<ApiResponse<PageResponse<BookSummary>>>("/books/mine", {
+  const res = await api.get<ApiResponse<PageResponse<BookSummary>>>(orgPath("/books/mine"), {
     params: { page, size },
   });
   return res.data.data;
 }
 
 export async function getBook(id: string) {
-  const res = await api.get<ApiResponse<Book>>(`/books/${id}`);
+  const res = await api.get<ApiResponse<Book>>(orgPath(`/books/${id}`));
   return res.data.data;
 }
 
@@ -38,11 +39,11 @@ export interface BookInput {
 }
 
 export async function createBook(input: BookInput) {
-  const res = await api.post<ApiResponse<Book>>("/books", input);
+  const res = await api.post<ApiResponse<Book>>(orgPath("/books"), input);
   return res.data.data;
 }
 
 export async function updateBook(id: string, input: BookInput) {
-  const res = await api.put<ApiResponse<Book>>(`/books/${id}`, input);
+  const res = await api.put<ApiResponse<Book>>(orgPath(`/books/${id}`), input);
   return res.data.data;
 }

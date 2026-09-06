@@ -8,6 +8,7 @@ import {
   useAcceptReservation, useDeclineReservation, useLeaveReservation, useMyReservations,
 } from "./useReservations";
 import { OfferCountdown } from "./OfferCountdown";
+import { orgBase } from "@/lib/orgPath";
 
 const STATUS: Record<ReservationStatus, { text: string; cls: string }> = {
   WAITING:  { text: "Na fila",               cls: "bg-amber-100 text-amber-800" },
@@ -41,7 +42,7 @@ export function MyReservationsPage() {
           {reservations.map((r) => (
             <li key={r.id} className="rounded-xl border border-border bg-card p-4">
               <div className="flex items-center justify-between gap-3">
-                <Link to={`/app/books/${r.bookId}`} className="min-w-0 flex-1 truncate font-medium text-foreground hover:underline">
+                <Link to={`${orgBase()}/books/${r.bookId}`} className="min-w-0 flex-1 truncate font-medium text-foreground hover:underline">
                   {r.bookTitle}
                 </Link>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS[r.status].cls}`}>

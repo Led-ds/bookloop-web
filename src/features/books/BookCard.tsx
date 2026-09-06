@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 import { BookMarked, User } from "lucide-react";
 import { StatusBadge } from "@/components/ui/badge";
 import type { BookSummary } from "@/types";
+import { orgBase } from "@/lib/orgPath";
 
 export function BookCard({ book }: { book: BookSummary }) {
   return (
     <Link
-      to={`/app/books/${book.id}`}
+      to={`${orgBase()}/books/${book.id}`}
       className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
     >
       <div className="relative flex aspect-[3/4] items-center justify-center bg-brand-50">

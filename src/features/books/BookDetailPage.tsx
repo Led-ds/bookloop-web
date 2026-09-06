@@ -15,6 +15,8 @@ import { useRequestRental } from "@/features/rentals/useRentals";
 import { useAuthStore } from "@/store/authStore";
 import { apiError, apiErrorKind, apiErrorCode } from "@/lib/apiError";
 import { useToast } from "@/components/ui/toast";
+import { orgKey } from "@/lib/orgPath";
+import { orgBase } from "@/lib/orgPath";
 
 function todayPlus(days: number) {
   const d = new Date();
@@ -47,7 +49,7 @@ export function BookDetailPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6">
-      <Link to="/app" className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-brand-700">
+      <Link to={orgBase()} className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-brand-700">
         <ArrowLeft className="h-4 w-4" /> Voltar ao acervo
       </Link>
 
@@ -99,7 +101,7 @@ export function BookDetailPage() {
           <div className="mt-6">
             {isOwner ? (
               <div className="flex flex-wrap items-center gap-3">
-                <Button onClick={() => navigate(`/app/books/${book.id}/edit`)}>Editar livro</Button>
+                <Button onClick={() => navigate(`${orgBase()}/books/${book.id}/edit`)}>Editar livro</Button>
                 <span className="text-sm text-gray-500">Este livro é seu.</span>
               </div>
             ) : canRequest ? (
@@ -130,7 +132,7 @@ export function BookDetailPage() {
           ownerName={book.owner.name}
           defaultName={me?.name ?? ""}
           onClose={() => setOpen(false)}
-          onDone={() => navigate("/app/rentals")}
+          onDone={() => navigate(`${orgBase()}/rentals`)}
         />
       )}
     </div>
@@ -169,7 +171,7 @@ function RentalModal({
           // disponível — avisa, atualiza o status na tela e fecha o modal.
           if (apiErrorCode(err) === "BOOK_ALREADY_RESERVED" || apiErrorKind(err) === "conflict") {
             error("Poxa, alguém solicitou primeiro — este livro já foi reservado.");
-            qc.invalidateQueries({ queryKey: ["books"] });
+            qc.invalidateQueries({ queryKey: orgKey("books") });
             onClose();
           }
           // Demais erros continuam aparecendo inline (request.isError) abaixo.

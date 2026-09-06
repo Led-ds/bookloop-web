@@ -7,6 +7,8 @@ import { useToast } from "@/components/ui/toast";
 import { useAuthStore } from "@/store/authStore";
 import { apiError, apiFieldErrors } from "@/lib/apiError";
 import { BookForm } from "./BookForm";
+import { orgKey } from "@/lib/orgPath";
+import { orgBase } from "@/lib/orgPath";
 
 export function EditBookPage() {
   const { id = "" } = useParams();
@@ -17,7 +19,7 @@ export function EditBookPage() {
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
 
   const { data: book, isLoading, isError } = useQuery({
-    queryKey: ["books", id],
+    queryKey: orgKey("books", id),
     queryFn: () => getBook(id),
     enabled: !!id,
   });
@@ -25,9 +27,9 @@ export function EditBookPage() {
   const mutation = useMutation({
     mutationFn: (payload: BookInput) => updateBook(id, payload),
     onSuccess: (updated) => {
-      qc.invalidateQueries({ queryKey: ["books"] });
+      qc.invalidateQueries({ queryKey: orgKey("books") });
       success("Livro atualizado.");
-      navigate(`/app/books/${updated.id}`);
+      navigate(`${orgBase()}/books/${updated.id}`);
     },
     onError: (err) => setServerErrors(apiFieldErrors(err)),
   });
@@ -44,7 +46,7 @@ export function EditBookPage() {
   }
   // Somente o dono edita.
   if (currentUserId && book.owner?.id && book.owner.id !== currentUserId) {
-    return <Navigate to={`/app/books/${id}`} replace />;
+    return <Navigate to={`${orgBase()}/books/${id}`} replace />;
   }
 
   const generalError =

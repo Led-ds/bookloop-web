@@ -3,6 +3,7 @@ import {
   createReview, getBookReviews, getPendingReviews, getUserReviews, updateReview,
   type CreateReviewInput, type UpdateReviewInput,
 } from "@/api/reviews";
+import { orgKey } from "@/lib/orgPath";
 
 export function useBookReviews(bookId: string) {
   return useQuery({
@@ -21,7 +22,7 @@ export function useUserReviews(userId: string) {
 }
 
 export function usePendingReviews() {
-  return useQuery({ queryKey: ["reviews", "pending"], queryFn: getPendingReviews });
+  return useQuery({ queryKey: orgKey("reviews", "pending"), queryFn: getPendingReviews });
 }
 
 export function useCreateReview() {
@@ -29,7 +30,7 @@ export function useCreateReview() {
   return useMutation({
     mutationFn: (input: CreateReviewInput) => createReview(input),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["reviews"] });
+      qc.invalidateQueries({ queryKey: orgKey("reviews") });
       qc.invalidateQueries({ queryKey: ["community"] });
     },
   });
@@ -40,7 +41,7 @@ export function useUpdateReview() {
   return useMutation({
     mutationFn: (input: UpdateReviewInput) => updateReview(input),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["reviews"] });
+      qc.invalidateQueries({ queryKey: orgKey("reviews") });
       qc.invalidateQueries({ queryKey: ["community"] });
     },
   });
