@@ -1,13 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import {
   BookOpen, Users, Shield, ArrowRight, KeyRound, Sparkles,
   Church, GraduationCap, Coffee, Heart, Check,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/cn";
 
 export function LandingPage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  if (isAuthenticated) return <Navigate to="/app" replace />;
   return (
     <div className="min-h-screen bg-background">
       {/* HEADER */}
