@@ -3,17 +3,18 @@ import {
   acceptReservation, createReservation, declineReservation,
   getMyReservations, leaveReservation,
 } from "@/api/reservations";
+import { orgKey } from "@/lib/orgPath";
 
 export function useMyReservations() {
-  return useQuery({ queryKey: ["reservations", "mine"], queryFn: getMyReservations });
+  return useQuery({ queryKey: orgKey("reservations", "mine"), queryFn: getMyReservations });
 }
 
 function useInvalidate() {
   const qc = useQueryClient();
   return () => {
-    qc.invalidateQueries({ queryKey: ["reservations"] });
-    qc.invalidateQueries({ queryKey: ["books"] });
-    qc.invalidateQueries({ queryKey: ["rentals"] });
+    qc.invalidateQueries({ queryKey: orgKey("reservations") });
+    qc.invalidateQueries({ queryKey: orgKey("books") });
+    qc.invalidateQueries({ queryKey: orgKey("rentals") });
   };
 }
 

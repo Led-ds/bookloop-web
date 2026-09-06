@@ -10,6 +10,7 @@ import { useMyRentals, useRentalAction, useRequestRenewal, type RentalActionType
 import type { Rental } from "@/types";
 import { usePendingReviews } from "@/features/reviews/useReviews";
 import { ReviewDialog } from "@/features/reviews/ReviewDialog";
+import { orgBase } from "@/lib/orgPath";
 
 function fmt(d?: string) {
   return d ? new Date(d).toLocaleDateString("pt-BR") : "—";
@@ -57,7 +58,7 @@ export function MyRentalsPage() {
           title="Você ainda não solicitou nenhum livro"
           hint="Encontre um título no acervo e faça sua primeira solicitação."
           action={
-            <Link to="/app">
+            <Link to={orgBase()}>
               <Button variant="outline"><Library className="h-4 w-4" /> Explorar acervo</Button>
             </Link>
           }

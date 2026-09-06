@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { orgPath } from "@/lib/orgPath";
 import type { ApiResponse, PageResponse } from "@/types";
 
 /** Espelha o ReviewResponse do backend. */
@@ -56,13 +57,13 @@ export interface CreateReviewInput {
 
 /** Aluguéis devolvidos com algo ainda a avaliar (JWT). */
 export async function getPendingReviews(): Promise<PendingReview[]> {
-  const res = await api.get<ApiResponse<PendingReview[]>>("/reviews/pending");
+  const res = await api.get<ApiResponse<PendingReview[]>>(orgPath("/reviews/pending"));
   return res.data.data;
 }
 
 /** Cria uma avaliação (JWT). */
 export async function createReview(input: CreateReviewInput): Promise<Review> {
-  const res = await api.post<ApiResponse<Review>>("/reviews", input);
+  const res = await api.post<ApiResponse<Review>>(orgPath("/reviews"), input);
   return res.data.data;
 }
 
@@ -74,7 +75,7 @@ export interface UpdateReviewInput {
 
 /** Edita uma avaliação existente (apenas o autor; JWT). */
 export async function updateReview(input: UpdateReviewInput): Promise<Review> {
-  const res = await api.put<ApiResponse<Review>>(`/reviews/${input.id}`, {
+  const res = await api.put<ApiResponse<Review>>(orgPath(`/reviews/${input.id}`), {
     rating: input.rating,
     comment: input.comment,
   });

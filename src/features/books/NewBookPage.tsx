@@ -5,6 +5,8 @@ import { createBook, type BookInput } from "@/api/books";
 import { useToast } from "@/components/ui/toast";
 import { apiError, apiFieldErrors } from "@/lib/apiError";
 import { BookForm } from "./BookForm";
+import { orgKey } from "@/lib/orgPath";
+import { orgBase } from "@/lib/orgPath";
 
 const EMPTY: BookInput = {
   title: "", author: "", isbn: "", genre: "FICCAO",
@@ -20,9 +22,9 @@ export function NewBookPage() {
   const mutation = useMutation({
     mutationFn: (payload: BookInput) => createBook(payload),
     onSuccess: (book) => {
-      qc.invalidateQueries({ queryKey: ["books"] });
+      qc.invalidateQueries({ queryKey: orgKey("books") });
       success("Livro cadastrado com sucesso.");
-      navigate(`/app/books/${book.id}`);
+      navigate(`${orgBase()}/books/${book.id}`);
     },
     onError: (err) => setServerErrors(apiFieldErrors(err)),
   });
