@@ -1,0 +1,13 @@
+# Frontend em modo DESENVOLVIMENTO — Vite dev server com hot reload.
+# (o Dockerfile de produção builda estático e serve por nginx; este NÃO substitui aquele)
+FROM node:20-alpine
+WORKDIR /app
+
+# instala dependências primeiro (camada cacheada)
+COPY package*.json ./
+RUN npm ci
+
+# o código é montado como volume no compose (hot reload).
+# --host 0.0.0.0 é obrigatório no container, senão o Vite só escuta internamente.
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
