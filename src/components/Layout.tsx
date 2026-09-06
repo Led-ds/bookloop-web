@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useOrganizationStore } from "@/store/organizationStore";
-import { BookOpen, Library, Inbox, Plus, Bookmark, LogOut, ShieldAlert } from "lucide-react";
+import { BookOpen, Library, Inbox, Plus, Bookmark, LogOut, ShieldAlert, Users } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/cn";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
@@ -8,7 +8,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export function Layout() {
   const activeOrgId = useOrganizationStore((s) => s.activeOrgId);
+  const myRole = useOrganizationStore((s) => s.myRole);
   const base = `/app/${activeOrgId}`;
+  const canManage = myRole === "OWNER" || myRole === "ADMIN";
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -50,6 +52,7 @@ export function Layout() {
             {navItem(`${base}/lendings`, "Empréstimos", Inbox)}
             {navItem(`${base}/reservations`, "Reservas", Bookmark)}
             {navItem(`${base}/books/new`, "Cadastrar", Plus)}
+            {canManage && navItem(`${base}/membros`, "Membros", Users)}
             <NavLink to="/app" className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground">Trocar comunidade</NavLink>
           </nav>
 

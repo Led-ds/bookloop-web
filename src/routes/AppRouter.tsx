@@ -2,6 +2,10 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 import { OrgGuard } from "@/routes/OrgGuard";
+import { PublicOnlyRoute } from "@/routes/PublicOnlyRoute";
+import { MembersPage } from "@/features/organizations/MembersPage";
+import { InvitationsPage } from "@/features/organizations/InvitationsPage";
+import { AcceptInvitationPage } from "@/features/organizations/AcceptInvitationPage";
 import { Layout } from "@/components/Layout";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RegisterPage } from "@/features/auth/RegisterPage";
@@ -29,8 +33,16 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  { path: "/login", element: <LoginPage /> },
-  { path: "/register", element: <RegisterPage /> },
+  {
+    element: <PublicOnlyRoute />,
+    children: [
+      { path: "/login", element: <LoginPage /> },
+      { path: "/register", element: <RegisterPage /> },
+    ],
+  },
+
+  // Aceitar convite — público (funciona logado ou não)
+  { path: "/convite/:token", element: <AcceptInvitationPage /> },
 
   // Área autenticada, mas AINDA sem comunidade selecionada
   {
@@ -60,6 +72,8 @@ export const router = createBrowserRouter([
               { path: "rentals", element: <MyRentalsPage /> },
               { path: "lendings", element: <LendingsPage /> },
               { path: "reservations", element: <MyReservationsPage /> },
+              { path: "membros", element: <MembersPage /> },
+              { path: "convites", element: <InvitationsPage /> },
             ],
           },
         ],
